@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Get State/Province Standard and Two-Letter Abbreviation API
+  description: Standardizes state and province names and returns their two-letter abbreviations using
+    AI-driven algorithms and knowledge bases.
+  contact:
+    name: Interzoid Support
+    url: https://www.interzoid.com
+    email: support@interzoid.com
+  version: 1.0.0
+externalDocs:
+  description: API home page and documentation
+  url: https://www.interzoid.com/apis/standardize-state-province-data
+servers:
+- url: https://api.interzoid.com
+  description: Production server
+security:
+- apiKeyAuth: []
+tags:
+- name: State/Province Standardization
+  description: Standardizes state or province names and provides two-letter abbreviations.
+paths:
+  /getstateabbreviation:
+    get:
+      tags:
+      - State/Province Standardization
+      summary: Get Standardized State/Province Name and Abbreviation
+      description: 'Returns a standardized state or province name and its two-letter abbreviation based
+        on the input. Include your API key (license) in the request. Register for an API key at https://www.interzoid.com/register-api-account.
+
+        '
+      operationId: getStateAbbreviation
+      parameters:
+      - name: state
+        in: query
+        description: The state or province name to standardize and abbreviate
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        examples:
+          stateName:
+            summary: State Name Example
+            value: Ohio
+      - name: algorithm
+        in: query
+        description: The algorithm and AI model used to standardize the state or province name
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        examples:
+          algorithm:
+            summary: Algorithm Example
+            value: ai-medium
+      responses:
+        '200':
+          description: Successful response containing the standardized state name and abbreviation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateAbbreviationResponse'
+              examples:
+                success:
+                  value:
+                    State: Ohio
+                    Abbreviation: OH
+                    Code: Success
+                    Credits: 10043
+        '400':
+          description: Bad request (e.g., missing or invalid parameters).
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: Invalid license key or state name missing.
+        '402':
+          description: API key not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: API key not found.
+        '403':
+          description: Insufficient API credits remaining.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: Insufficient API credits remaining.
+        '405':
+          description: Method not allowed.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: Method not allowed.
+        '429':
+          description: Rate limits reached.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: Rate limits reached.
+        '500':
+          description: Internal server error.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                error:
+                  value: Internal server error.
+components:
+  schemas:
+    StateAbbreviationResponse:
+      type: object
+      properties:
+        Abbreviation:
+          type: string
+          description: The two-letter abbreviation for the state or province
+          x-ballerina-name: abbreviation
+        Credits:
+          type: integer
+          description: Remaining credits for your API license
+          x-ballerina-name: credits
+        State:
+          type: string
+          description: The standardized state or province name
+          x-ballerina-name: state
+        Code:
+          type: string
+          description: Response code, "Success" if the call is successful
+          x-ballerina-name: code
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      name: license
+      in: query
+      description: Interzoid API license key supplied as the license query parameter
